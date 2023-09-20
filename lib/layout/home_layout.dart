@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list/modules/archived_tasks.dart';
+import 'package:to_do_list/modules/done_tasks.dart';
+import 'package:to_do_list/modules/new_tasks.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({super.key});
@@ -9,6 +12,17 @@ class HomeLayout extends StatefulWidget {
 
 class HomeLayoutState extends State<HomeLayout> {
   int currentIndex = 0;
+  List<Widget> tasks = [
+    const NewTasks(),
+    const DoneTasks(),
+    const ArchiveTasks()
+  ];
+  List<String> titles = [
+    "New Tasks",
+    "Done Tasks",
+    "Archived Tasks",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,8 +46,9 @@ class HomeLayoutState extends State<HomeLayout> {
           ]),
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("To Do"),
+        title: Text(titles[currentIndex]),
       ),
+      body: tasks[currentIndex],
     );
   }
 }
