@@ -34,3 +34,31 @@ class Todo extends StatelessWidget {
     );
   }
 }
+
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      centerTitle: true,
+      elevation: 0,
+      leading: const Icon(
+        Icons.menu,
+        color: Colors.white,
+      ),
+      title: const Text(
+        "My To-Do",
+        style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            fontFamily: "times new roman"),
+      ),
+      actions: [
+        IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ))
+      ],
+    ),
+  );
+}
