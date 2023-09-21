@@ -25,7 +25,7 @@ class HomeLayoutState extends State<HomeLayout> {
     "Done Tasks",
     "Archived Tasks",
   ];
-  var dataBase;
+  late Database dataBase;
   @override
   void initState() {
     // TODO: implement initState
@@ -65,26 +65,38 @@ class HomeLayoutState extends State<HomeLayout> {
   }
 
   void createDatabase() async {
-    dataBase = await openDatabase(
-      "todo.db",
-      version: 1,
-      onCreate: (database, version) async {
-        print("database created");
-        await database.execute(
-            'CREATE TABLE tasks (id INTEGER PRIMARY KEY,title TEXT,date TEXT,time TEXT,status TEXT)');
-      },
-      onOpen: (database) {
-        print("database opened");
-      },
-    );
+    try{
+      dataBase = await openDatabase(
+        "todo.db",
+        version: 1,
+        onCreate: (database, version) async {
+          print("database created");
+          await database.execute(
+              'CREATE TABLE tasks (id INTEGER PRIMARY KEY,title TEXT,date TEXT,time TEXT,status TEXT)');
+        },
+        onOpen: (database) {
+          print("database opened");
+        },
+      );
+    }
+    catch(error){
+      print("error in creating database ${error.toString()}");
+    }
+
   }
 
   void insertToDatabase() async {
-    await dataBase.transaction(
-      (txn) {
-        return txn.execute(
-            'INSERT INTO tasks(title,date,time,status) VALUES("first task","0222","345","done")');
-      },
-    );
+    try {
+      await dataBase.transaction(
+            (txn) {
+          return txn.execute(
+              'INSERT INTO tasks(title,date,time,status) VALUES("first task","0222","345","done")');
+        },
+      );
+    }
+    catch(error){
+      print("error in inserting database:  ${error.toString()}");
+    }
+
   }
 }
