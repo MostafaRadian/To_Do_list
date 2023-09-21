@@ -1,7 +1,10 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'package:flutter/material.dart';
 import 'package:to_do_list/modules/archived_tasks.dart';
 import 'package:to_do_list/modules/done_tasks.dart';
 import 'package:to_do_list/modules/new_tasks.dart';
+import 'package:sqflite/sqflite.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({super.key});
@@ -22,12 +25,26 @@ class HomeLayoutState extends State<HomeLayout> {
     "Done Tasks",
     "Archived Tasks",
   ];
+  var dataBase;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    createDatabase();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(titles[currentIndex]),
+      ),
+      body: tasks[currentIndex],
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          insertToDatabase();
+        },
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -44,11 +61,30 @@ class HomeLayoutState extends State<HomeLayout> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.archive_outlined), label: "Archive"),
           ]),
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(titles[currentIndex]),
-      ),
-      body: tasks[currentIndex],
+    );
+  }
+
+  void createDatabase() async {
+    dataBase = await openDatabase(
+      "todo.db",
+      version: 1,
+      onCreate: (database, version) async {
+        print("database created");
+        await database.execute(
+            'CREATE TABLE tasks (id INTEGER PRIMARY KEY,title TEXT,date TEXT,time TEXT,status TEXT)');
+      },
+      onOpen: (database) {
+        print("database opened");
+      },
+    );
+  }
+
+  void insertToDatabase() async {
+    await dataBase.transaction(
+      (txn) {
+        return txn.execute(
+            'INSERT INTO tasks(title,date,time,status) VALUES("first task","0222","345","done")');
+      },
     );
   }
 }
