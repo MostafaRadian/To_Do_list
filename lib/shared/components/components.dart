@@ -55,3 +55,24 @@ Widget defaultFormField({
               suffixIconColor: color),
           validator: validate),
     );
+
+Widget buildTaskItem({required Map model}) {
+  return Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: Row(
+      children: [
+        CircleAvatar(
+          radius: 40,
+          child: Text("${model['time']}"),
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [Text("${model['title']}"), Text("${model['date']}")],
+        )
+      ],
+    ),
+  );
+}

@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list/shared/components/components.dart';
+
+import '../shared/components/constants.dart';
+
 
 class NewTasks extends StatefulWidget {
   const NewTasks({super.key});
 
   @override
-  State<NewTasks> createState() => NewTasksState();
+  State<NewTasks> createState() => _NewTasksState();
 }
 
-class NewTasksState extends State<NewTasks> {
+class _NewTasksState extends State<NewTasks> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return ListView.builder(
+      itemBuilder: (context, index) => buildTaskItem(model: taskList[index]),
+      itemCount: taskList.length,
+    );
   }
 }
