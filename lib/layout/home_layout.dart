@@ -1,32 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:to_do_list/modules/archived_tasks.dart';
-import 'package:to_do_list/modules/done_tasks.dart';
-import 'package:to_do_list/modules/new_tasks.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:to_do_list/shared/components/components.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:to_do_list/models/to_do_cubit.dart';
+import 'package:to_do_list/shared/components/components.dart';
 
-import '../shared/components/constants.dart';
+class HomeLayout extends StatelessWidget {
+  HomeLayout({super.key});
 
-class HomeLayout extends StatefulWidget {
-  const HomeLayout({super.key});
-
-  @override
-  State<HomeLayout> createState() => HomeLayoutState();
-}
-
-class HomeLayoutState extends State<HomeLayout> {
-  int currentIndex = 0;
-  List<Widget> tasks = [
-    const NewTasks(),
-    const DoneTasks(),
-    const ArchiveTasks()
-  ];
-  List<String> titles = [
-    "New Tasks",
-    "Done Tasks",
-    "Archived Tasks",
-  ];
   Database? dataBase;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   var formKey = GlobalKey<FormState>();
@@ -37,21 +19,19 @@ class HomeLayoutState extends State<HomeLayout> {
   Icon changeIcon = const Icon(Icons.edit);
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    createDatabase();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    ToDoCubit cubit = ToDoCubit.get(context);
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(titles[currentIndex]),
+        title: Text(cubit.titles[cubit.currentIndex]),
       ),
-      body: tasks[currentIndex],
+      body: BlocBuilder<ToDoCubit, ToDoState>(
+        builder: (context, state) {
+          return cubit.tasks[cubit.currentIndex];
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (isBottomSheet) {
@@ -62,13 +42,15 @@ class HomeLayoutState extends State<HomeLayout> {
                       date: dateController.text)
                   .then((value) {
                 getDataFromDataBase(dataBase).then((value) {
-                  setState(() {
-                    taskList = value;
-                    print(taskList);
-                    Navigator.pop(context);
-                    isBottomSheet = false;
-                    changeIcon = const Icon(Icons.edit);
-                  });
+                  // setState(() {
+                  //   taskList = value;
+                  //   if (kDebugMode) {
+                  //     print(taskList);
+                  //   }
+                  //   Navigator.pop(context);
+                  //   isBottomSheet = false;
+                  //   changeIcon = const Icon(Icons.edit);
+                  // });
                 });
               });
             }
@@ -94,7 +76,7 @@ class HomeLayoutState extends State<HomeLayout> {
                                 return null;
                               },
                               label: "Task Title",
-                              color: Colors.blue,
+                              color: Colors.purple,
                               prefixIcon: const Icon(Icons.title),
                             ),
                             const SizedBox(
@@ -110,7 +92,7 @@ class HomeLayoutState extends State<HomeLayout> {
                                 }
                                 return null;
                               },
-                              color: Colors.blue,
+                              color: Colors.purple,
                               prefixIcon:
                                   const Icon(Icons.watch_later_outlined),
                               onTap: () {
@@ -136,7 +118,7 @@ class HomeLayoutState extends State<HomeLayout> {
                                 return null;
                               },
                               label: "Date",
-                              color: Colors.blue,
+                              color: Colors.purple,
                               prefixIcon: const Icon(Icons.calendar_today),
                               onTap: () {
                                 showDatePicker(
@@ -158,32 +140,34 @@ class HomeLayoutState extends State<HomeLayout> {
                 .closed
                 .then((value) {
               isBottomSheet = false;
-              setState(() {
-                changeIcon = const Icon(Icons.edit);
-              });
+              // setState(() {
+              //   changeIcon = const Icon(Icons.edit);
+              // });
             });
             isBottomSheet = true;
-            setState(() {
-              changeIcon = const Icon(Icons.add);
-            });
+            // setState(() {
+            //   changeIcon = const Icon(Icons.add);
+            // });
           }
         },
         child: changeIcon,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: currentIndex,
-          onTap: (index) {
-            setState(() {
-              currentIndex = index;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.menu), label: "Tasks"),
-            BottomNavigationBarItem(icon: Icon(Icons.check), label: "Done"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.archive_outlined), label: "Archive"),
-          ]),
+      bottomNavigationBar: BlocBuilder<ToDoCubit, ToDoState>(
+        builder: (context, state) {
+          return BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              currentIndex: cubit.currentIndex,
+              onTap: (index) {
+                cubit.changeNavBar(index);
+              },
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.menu), label: "Tasks"),
+                BottomNavigationBarItem(icon: Icon(Icons.check), label: "Done"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.archive_outlined), label: "Archive"),
+              ]);
+        },
+      ),
     );
   }
 
@@ -191,21 +175,28 @@ class HomeLayoutState extends State<HomeLayout> {
     try {
       dataBase = await openDatabase("todo.db", version: 1,
           onCreate: (database, version) async {
-        print("database created");
+        if (kDebugMode) {
+          print("database created");
+        }
         await database.execute(
             'CREATE TABLE tasks (id INTEGER PRIMARY KEY,title TEXT,date TEXT,time TEXT,status TEXT)');
       }, onOpen: (database) {
-        print("database opened");
+        if (kDebugMode) {
+          print("database opened");
+        }
       });
     } catch (error) {
-      print("error in creating database ${error.toString()}");
+      if (kDebugMode) {
+        print("error in creating database ${error.toString()}");
+      }
     }
   }
 
-  Future insertToDatabase(
-      {required String title,
-      required String time,
-      required String date}) async {
+  Future insertToDatabase({
+    required String title,
+    required String time,
+    required String date,
+  }) async {
     try {
       await dataBase?.transaction(
         (txn) {
@@ -214,7 +205,9 @@ class HomeLayoutState extends State<HomeLayout> {
         },
       );
     } catch (error) {
-      print("error in inserting database:  ${error.toString()}");
+      if (kDebugMode) {
+        print("error in inserting database:  ${error.toString()}");
+      }
     }
   }
 

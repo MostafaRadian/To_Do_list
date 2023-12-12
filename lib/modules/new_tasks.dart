@@ -3,7 +3,6 @@ import 'package:to_do_list/shared/components/components.dart';
 
 import '../shared/components/constants.dart';
 
-
 class NewTasks extends StatefulWidget {
   const NewTasks({super.key});
 
