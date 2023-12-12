@@ -25,7 +25,11 @@ class HomeLayout extends StatelessWidget {
       key: scaffoldKey,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(cubit.titles[cubit.currentIndex]),
+        title: BlocBuilder<ToDoCubit, ToDoState>(
+          builder: (context, state) {
+            return Text(cubit.titles[cubit.currentIndex]);
+          },
+        ),
       ),
       body: BlocBuilder<ToDoCubit, ToDoState>(
         builder: (context, state) {
