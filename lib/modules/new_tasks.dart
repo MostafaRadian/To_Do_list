@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:to_do_list/models/to_do_cubit.dart';
 import 'package:to_do_list/shared/components/components.dart';
 
-import '../shared/components/constants.dart';
-
-class NewTasks extends StatefulWidget {
+class NewTasks extends StatelessWidget {
   const NewTasks({super.key});
 
   @override
-  State<NewTasks> createState() => _NewTasksState();
-}
-
-class _NewTasksState extends State<NewTasks> {
-  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (context, index) => buildTaskItem(model: taskList[index]),
-      itemCount: taskList.length,
+    return BlocBuilder<ToDoCubit, ToDoState>(
+      builder: (context, state) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: ToDoCubit.get(context).taskList?.length ?? 0,
+          itemBuilder: (context, index) =>
+              buildTaskItem(model: ToDoCubit.get(context).taskList![index]),
+        );
+      },
     );
   }
 }
