@@ -1,4 +1,5 @@
 import 'package:flutter/Material.dart';
+import 'package:to_do_list/models/to_do_cubit.dart';
 
 Widget defaultButton({
   var function = print,
@@ -56,7 +57,59 @@ Widget defaultFormField({
           validator: validate),
     );
 
-Widget buildTaskItem({required Map model}) {
+// Widget buildTaskItem({required Map model, required context}) {
+//   return Padding(
+//     padding: const EdgeInsets.all(20.0),
+//     child: Row(
+//       children: [
+//         CircleAvatar(
+//           radius: 40,
+//           child: Text("${model['time']}"),
+//         ),
+//         const SizedBox(
+//           width: 20,
+//         ),
+//         Expanded(
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [Text("${model['title']}"), Text("${model['date']}")],
+//           ),
+//         ),
+//         const SizedBox(
+//           width: 20,
+//         ),
+//         IconButton(
+//             onPressed: () {
+//               ToDoCubit.get(context).updateStatus(model['id'], model['status']);
+//             },
+//             icon: Icon(
+//               model['status'] == 'true'
+//                   ? Icons.check_circle
+//                   : Icons.check_circle_outline,
+//               color: Colors.blueAccent,
+//             )),
+//         IconButton(
+//             onPressed: () {
+//               ToDoCubit.get(context)
+//                   .updateArchive(model['id'], model['archived']);
+//             },
+//             icon: Icon(
+//               model['archived'] == 'true'
+//                   ? Icons.archive
+//                   : Icons.archive_outlined,
+//               color: Colors.black45,
+//             ))
+//       ],
+//     ),
+//   );
+// }
+
+Widget buildTaskItem({
+  required Map model,
+  required context,
+  required bool showCheckCircle,
+  required bool showArchiveButton,
+}) {
   return Padding(
     padding: const EdgeInsets.all(20.0),
     child: Row(
@@ -68,10 +121,40 @@ Widget buildTaskItem({required Map model}) {
         const SizedBox(
           width: 20,
         ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [Text("${model['title']}"), Text("${model['date']}")],
-        )
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [Text("${model['title']}"), Text("${model['date']}")],
+          ),
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        if (showCheckCircle)
+          IconButton(
+            onPressed: () {
+              ToDoCubit.get(context).updateStatus(model['id'], model['status']);
+            },
+            icon: Icon(
+              model['status'] == 'true'
+                  ? Icons.check_circle
+                  : Icons.check_circle_outline,
+              color: Colors.blueAccent,
+            ),
+          ),
+        if (showArchiveButton)
+          IconButton(
+            onPressed: () {
+              ToDoCubit.get(context)
+                  .updateArchive(model['id'], model['archived']);
+            },
+            icon: Icon(
+              model['archived'] == 'true'
+                  ? Icons.archive
+                  : Icons.archive_outlined,
+              color: Colors.black45,
+            ),
+          ),
       ],
     ),
   );

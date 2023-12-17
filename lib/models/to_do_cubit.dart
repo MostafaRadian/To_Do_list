@@ -57,4 +57,18 @@ class ToDoCubit extends Cubit<ToDoState> {
     taskList = await DBHelper.getDataFromDB();
     emit(SelectDataState());
   }
+
+  Future<void> updateStatus(int id, String status) async {
+    if (status == 'true' || status == 'false') {
+      await DBHelper.updateTaskStatus(id, status);
+      await getData();
+      emit(UpdateTaskState());
+    }
+  }
+
+  Future<void> updateArchive(int id, String archive) async {
+    await DBHelper.updateArchiveStatus(id, archive);
+    await getData();
+    emit(UpdateArchiveState());
+  }
 }

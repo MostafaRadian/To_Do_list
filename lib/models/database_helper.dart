@@ -26,7 +26,7 @@ class DBHelper {
             version: 1,
             onCreate: (db, version) async {
               await db.execute(
-                '''CREATE TABLE todo (id INTEGER PRIMARY KEY,title TEXT,date TEXT,time TEXT,status TEXT DEFAULT 'false')''',
+                '''CREATE TABLE todo (id INTEGER PRIMARY KEY,title TEXT,date TEXT,time TEXT,status TEXT DEFAULT 'false',archived TEXT DEFAULT 'false')''',
               );
             },
           );
@@ -58,11 +58,27 @@ class DBHelper {
     }
   }
 
-  static Future<void> updateTaskStatus(int taskId, bool status) async {
+  static Future<void> updateTaskStatus(int taskId, String status) async {
     try {
       await db?.update(
         'todo',
-        {'status': status ? 'true' : 'false'}, // Convert bool to String
+        {'status': status == 'true' ? 'false' : 'true'},
+        where: 'id = ?',
+        // In SQLite's UPDATE statement, you typically use placeholders (represented by ?) and the whereArgs parameter to provide the values for those placeholders. This is done for security and to prevent SQL injection attacks.
+        whereArgs: [taskId],
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        print("Error updating favourite status: $error");
+      }
+    }
+  }
+
+  static Future<void> updateArchiveStatus(int taskId, String archived) async {
+    try {
+      await db?.update(
+        'todo',
+        {'archived': archived == 'true' ? 'false' : 'true'},
         where: 'id = ?',
         // In SQLite's UPDATE statement, you typically use placeholders (represented by ?) and the whereArgs parameter to provide the values for those placeholders. This is done for security and to prevent SQL injection attacks.
         whereArgs: [taskId],

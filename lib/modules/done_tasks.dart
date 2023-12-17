@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class DoneTasks extends StatefulWidget {
+import '../models/to_do_cubit.dart';
+import '../shared/components/components.dart';
+
+class DoneTasks extends StatelessWidget {
   const DoneTasks({super.key});
 
   @override
-  State<DoneTasks> createState() => DoneTasksState();
-}
-
-class DoneTasksState extends State<DoneTasks> {
-  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return BlocBuilder<ToDoCubit, ToDoState>(
+      builder: (context, state) {
+        ToDoCubit cubit = ToDoCubit.get(context);
+        List<Map<String, dynamic>> doneTasks = [];
+
+        for (int index = 0; index < cubit.taskList!.length; index++) {
+          if (cubit.taskList![index]['status'] == 'true' &&
+              cubit.taskList![index]['archived'] == 'false') {
+            doneTasks.add(cubit.taskList![index]);
+          }
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: doneTasks.length,
+          itemBuilder: (context, index) => buildTaskItem(
+            model: doneTasks[index],
+            context: context,
+            showCheckCircle: true,
+            showArchiveButton: false,
+          ),
+        );
+      },
+    );
   }
 }
