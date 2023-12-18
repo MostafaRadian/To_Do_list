@@ -94,4 +94,18 @@ class DBHelper {
     var result = await db?.query('todo');
     return result;
   }
+
+  static Future<void> deleteTaskById(int taskId) async {
+    try {
+      await db?.delete(
+        'todo',
+        where: 'id = ?',
+        whereArgs: [taskId],
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        print("Error deleting task: $error");
+      }
+    }
+  }
 }

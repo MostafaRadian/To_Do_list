@@ -18,3 +18,5 @@ class SelectDataState extends ToDoState {}
 class UpdateTaskState extends ToDoState {}
 
 class UpdateArchiveState extends ToDoState {}
+
+class DeleteTaskState extends ToDoState {}

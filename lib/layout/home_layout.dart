@@ -19,10 +19,14 @@ class HomeLayout extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
+        backgroundColor: const Color(0xFF836eb9),
         centerTitle: true,
         title: BlocBuilder<ToDoCubit, ToDoState>(
           builder: (context, state) {
-            return Text(ToDoCubit.titles[ToDoCubit.currentIndex]);
+            return Text(
+              ToDoCubit.titles[ToDoCubit.currentIndex],
+              style: const TextStyle(color: Colors.white),
+            );
           },
         ),
       ),

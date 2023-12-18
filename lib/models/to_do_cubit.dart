@@ -14,6 +14,9 @@ class ToDoCubit extends Cubit<ToDoState> {
   bool isBottomSheet = false;
   IconData addTaskIcon = Icons.edit;
   List<Map<String, dynamic>>? taskList = [];
+  List<Map<String, dynamic>>? newTasks = [];
+  List<Map<String, dynamic>>? doneTasks = [];
+  List<Map<String, dynamic>>? archivedTasks = [];
   List<bool> statusList = [];
 
   static int currentIndex = 0;
@@ -37,6 +40,13 @@ class ToDoCubit extends Cubit<ToDoState> {
     emit(ChangeNavBarState());
   }
 
+  Future<void> refreshTasks() async {
+    taskList = await DBHelper.getDataFromDB();
+    newTasks = [];
+    doneTasks = [];
+    archivedTasks = [];
+  }
+
   Future<void> insertData({
     required String title,
     required String time,
@@ -44,7 +54,7 @@ class ToDoCubit extends Cubit<ToDoState> {
   }) async {
     try {
       await DBHelper.insertToDB(title: title, time: time, date: date);
-      taskList = await DBHelper.getDataFromDB();
+      await getData();
       emit(InsertToDBState());
     } catch (error) {
       if (kDebugMode) {
@@ -54,7 +64,24 @@ class ToDoCubit extends Cubit<ToDoState> {
   }
 
   Future<void> getData() async {
-    taskList = await DBHelper.getDataFromDB();
+    await refreshTasks();
+    taskList?.forEach((element) {
+      if (element['status'] == 'false' && element['archived'] == 'false') {
+        newTasks?.add(element);
+      } else if (element['status'] == 'true' &&
+          element['archived'] == 'false') {
+        doneTasks?.add(element);
+      } else if (element['status'] == 'false' &&
+          element['archived'] == 'true') {
+        archivedTasks?.add(element);
+      }
+    });
+    // for (int index = 0; index < taskList!.length; index++) {
+    //   if (taskList![index]['status'] == 'false' &&
+    //       taskList![index]['archived'] == 'false') {
+    //     newTasks?.add(taskList![index]);
+    //   }
+    // }
     emit(SelectDataState());
   }
 
@@ -70,5 +97,11 @@ class ToDoCubit extends Cubit<ToDoState> {
     await DBHelper.updateArchiveStatus(id, archive);
     await getData();
     emit(UpdateArchiveState());
+  }
+
+  Future<void> deleteTask(int id) async {
+    await DBHelper.deleteTaskById(id);
+    await getData();
+    emit(DeleteTaskState());
   }
 }

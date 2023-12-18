@@ -12,25 +12,8 @@ class DoneTasks extends StatelessWidget {
     return BlocBuilder<ToDoCubit, ToDoState>(
       builder: (context, state) {
         ToDoCubit cubit = ToDoCubit.get(context);
-        List<Map<String, dynamic>> doneTasks = [];
-
-        for (int index = 0; index < cubit.taskList!.length; index++) {
-          if (cubit.taskList![index]['status'] == 'true' &&
-              cubit.taskList![index]['archived'] == 'false') {
-            doneTasks.add(cubit.taskList![index]);
-          }
-        }
-
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: doneTasks.length,
-          itemBuilder: (context, index) => buildTaskItem(
-            model: doneTasks[index],
-            context: context,
-            showCheckCircle: true,
-            showArchiveButton: false,
-          ),
-        );
+        return taskBuilder(
+            tasks: cubit.doneTasks, checkCircle: true, archiveButton: false);
       },
     );
   }
