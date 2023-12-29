@@ -1,39 +1,68 @@
-# To-Do List
+## To-Do List App
 
-The code represents a Flutter screen for a to-do list app called `HomeLayout`. Here's a breakdown of its major components and functionalities:
+This repository contains the source code for a To-Do List app built with Flutter. The app follows a
+clean architecture pattern to ensure separation of concerns and maintainability.
 
-1. Widget Composition:
-   - The `HomeLayout` widget is defined as a `StatefulWidget` that manages its own state using `HomeLayoutState`.
-   - The screen includes an `AppBar`, a body that displays different task modules based on the selected index, a floating action button, and a bottom navigation bar.
+### Features
 
-2. Task Modules:
-   - The code imports three modules: `NewTasks`, `DoneTasks`, and `ArchiveTasks`, each representing a different view for tasks.
-   - These modules are stored in a list called `tasks`, and the currently selected module is displayed in the body based on the `currentIndex` value.
+- Create new tasks with a title, date, and time.
+- Mark tasks as done or undone.
+- Archive tasks to keep them out of the main task list.
+- Delete tasks permanently.
+- Switch between different views: All tasks, Done tasks, and Archived tasks.
+- User-friendly interface with intuitive navigation.
 
-3. Database Operations:
-   - The code uses the `sqflite` package to create and interact with an SQLite database.
-   - The `createDatabase` function creates the database if it doesn't exist and defines a table named "tasks" with specific columns.
-   - The `insertToDatabase` function inserts a new task into the database, providing title, time, and date values.
-   - The `getDataFromDataBase` function retrieves all tasks from the database and returns them as a list of maps.
+### Architecture
 
-4. UI Interactions:
-   - Tapping the floating action button toggles a bottom sheet.
-   - The bottom sheet contains a form for adding a new task, including fields for title, time, and date.
-   - When the form is submitted, the `insertToDatabase` function is called to insert the task into the database.
-   - The `showTimePicker` and `showDatePicker` functions are used to display time and date pickers, respectively.
+The app utilizes the following architectural components:
 
-5. State Management:
-   - The `currentIndex` variable tracks the currently selected task module in the bottom navigation bar.
-   - The `isBottomSheet` variable determines whether the bottom sheet is currently displayed.
-   - The `changeIcon` variable stores the icon for the floating action button, which changes based on the bottom sheet state.
+- **Presentation Layer**: This layer handles the user interface and user interactions. It consists
+  of the `home_layout.dart` file, which displays the task list and provides the user interface for
+  adding, editing, and managing tasks. It also includes the `shared/components` directory, which
+  contains reusable UI components used throughout the app.
 
-6. Lifecycle and Initialization:
-   - The `initState` method is overridden and called when the widget is first created.
-   - In `initState`, the `createDatabase` function is called to initialize the database.
+- **Domain Layer**: This layer defines the core business logic and models. The `to_do_cubit.dart`
+  file represents the app's core logic, including the state management using the `flutter_bloc`
+  library.
 
-Overall, the code combines Flutter's widget composition, state management, database operations, form handling, and UI interactions to create a to-do list app with multiple task modules and database integration.
+- **Data Layer**: This layer manages data persistence and retrieval. The `database_helper.dart` file
+  contains the database helper class responsible for creating and managing the SQLite database using
+  the `sqflite` plugin.
+
+### Installation
+
+1. Make sure you have Flutter installed on your machine. If not, follow the
+   official [Flutter installation guide](https://flutter.dev/docs/get-started/install).
+2. Clone this repository to your local machine using the following command:
+   `````
+   git clone https://github.com/your-username/to-do-list-app.git
+   ```
+3. Change into the cloned directory:
+   ````
+   cd to-do-list-app
+   ````
+4. Run the app on a connected device or emulator:
+   ````
+   flutter run
+   ````
+
+### Dependencies
+
+The app relies on the following dependencies:
+
+- `flutter_bloc` - State management library for Flutter.
+- `sqflite` - SQLite plugin for Flutter, used for local database operations.
+- `intl` - Internationalization and localization support for Flutter.
+
+These dependencies are automatically resolved by Flutter's package manager.
+
+### License
+
+This project is licensed under the MIT License. Feel free to use and modify the code for your own
+purposes.
+
+### Screenshots
 
 ![Screen Shot 2023-10-30 at 1 12 42 AM](https://github.com/MostafaRadian/To_Do_list/assets/46004434/41af8b41-d066-4e0a-b2b5-1e7363802ebf)
-![Screen Shot 2023-10-30 at 1 13 13 AM](https://github.com/MostafaRadian/To_Do_list/assets/46004434/44f80136-bc43-4327-bdb7-fcccc83cf301) 
+![Screen Shot 2023-10-30 at 1 13 13 AM](https://github.com/MostafaRadian/To_Do_list/assets/46004434/44f80136-bc43-4327-bdb7-fcccc83cf301)
 ![Screen Shot 2023-10-30 at 1 14 23 AM](https://github.com/MostafaRadian/To_Do_list/assets/46004434/3b4fba18-769d-461b-9395-37b57a984ea3) ![Screen Shot 2023-10-30 at 1 15 02 AM](https://github.com/MostafaRadian/To_Do_list/assets/46004434/5d103b25-8bfb-45c9-9405-4874a93f8c32)
-
